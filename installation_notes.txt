@@ -1,0 +1,4 @@
+install matching nvidia drive:
+https://stradajl.readthedocs.io/en/latest/tutorial/
+
+really should rebuild on top of nvidia-docker?
