@@ -72,3 +72,55 @@ sudo reboot
 nvidia-smi
 
 # should be NVIDIA-SMI 346.46     Driver Version: 346.46
+
+# -----------------------------
+# install docker from main repo
+# -----------------------------
+
+# installing docker on aws ubuntu 14.04 gpu instance:
+# (from https://docs.docker.com/engine/installation/linux/ubuntulinux/)
+
+sudo apt-get update
+sudo apt-get install apt-transport-https ca-certificates
+sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo deb https://apt.dockerproject.org/repo ubuntu-trusty main | sudo tee /etc/apt/sources.list.d/docker.list
+sudo apt-get update
+sudo apt-get install linux-headers-3.13.0-100-generic
+sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+sudo apt-get install docker-engine
+sudo usermod -aG docker ubuntu
+
+# use some script to make nividia-uwm show up in /dev
+# save the following in uvm.sh and sudo bash uvm.sh to run
+
+#!/bin/bash
+
+/sbin/modprobe nvidia
+
+if [ "$?" -eq 0 ]; then
+  # Count the number of NVIDIA controllers found.
+  NVDEVS=`lspci | grep -i NVIDIA`
+  N3D=`echo "$NVDEVS" | grep "3D controller" | wc -l`
+  NVGA=`echo "$NVDEVS" | grep "VGA compatible controller" | wc -l`
+
+  N=`expr $N3D + $NVGA - 1`
+  for i in `seq 0 $N`; do
+    mknod -m 666 /dev/nvidia$i c 195 $i
+  done
+
+  mknod -m 666 /dev/nvidiactl c 195 255
+
+else
+  exit 1
+fi
+
+/sbin/modprobe nvidia-uvm
+
+if [ "$?" -eq 0 ]; then
+  # Find out the major device number used by the nvidia-uvm driver
+  D=`grep nvidia-uvm /proc/devices | awk '{print $1}'`
+
+  mknod -m 666 /dev/nvidia-uvm c $D 0
+else
+  exit 1
+fi
