@@ -124,3 +124,25 @@ if [ "$?" -eq 0 ]; then
 else
   exit 1
 fi
+
+___________________
+
+# edit dockerfile and rebuild image
+
+# dd the following line to Dockerfile, right after the same for main.py
+
+COPY mydense.py /scripts/
+
+# now build the image
+
+docker build -t rdonovan/keras-genomics:hack .
+
+# push it to docker hub:
+
+docker push rdonovan/keras-genomics:hack
+
+# now run
+
+docker run --rm --device /dev/nvidiactl --device /dev/nvidia-uvm --device /dev/nvidia0     -v $(pwd)/example:/modeldir -v $(pwd)/expt1:/datadir rorydm/keras-genomics         python main.py -d /datadir -c trial2 -m /modeldir/model.py -s 1001 -y -t -e
+
+# it will take a minute to initialize the model, then the screen should be full of epoch test train validation metrics.
