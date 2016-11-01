@@ -1,4 +1,64 @@
-install matching nvidia drive:
-https://stradajl.readthedocs.io/en/latest/tutorial/
+# install matching nvidia drivers on AWS
+# from https://stradajl.readthedocs.io/en/latest/tutorial/
+# really should rebuild genomics container on top of nvidia-docker
+# ----------------------------------------------------------------
 
-really should rebuild on top of nvidia-docker?
+# First update the system and install build-essential:
+
+sudo apt-get update && sudo apt-get upgrade
+sudo apt-get install build-essential
+
+# Next, download the NVIDIA driver
+
+wget http://developer.download.nvidia.com/compute/cuda/7_0/Prod/local_installers/cuda_7.0.28_linux.run
+
+# Extract the installers using
+
+chmod +x cuda_7.0.28_linux.run
+mkdir nvidia_installers
+./cuda_7.0.28_linux.run -extract=`pwd`/nvidia_installers
+
+#Then update the linux image to be compatible with NVIDIA's drivers:
+
+sudo apt-get install linux-image-extra-virtual
+
+# While installing the linux-image-extra-virtual, you may be prompted "What would you like to do about menu.lst?". I selected "keep the local version currently installed".
+
+Now we have to disable nouveau since it conflicts with NVIDIA's kernel module. Open
+
+sudo vi /etc/modprobe.d/blacklist-nouveau.conf
+
+# and add the following lines to this file:
+
+blacklist nouveau
+blacklist lbm-nouveau
+options nouveau modeset=0
+alias nouveau off
+alias lbm-nouveau off
+
+# Back in the shell, execute the commands:
+
+echo options nouveau modeset=0 | sudo tee -a /etc/modprobe.d/nouveau-kms.conf
+sudo update-initramfs -u
+sudo reboot
+
+# After the reboot, we can finally install the driver:
+
+sudo apt-get install linux-source
+sudo apt-get install linux-headers-`uname -r`
+
+cd nvidia_installers
+sudo ./NVIDIA-Linux-x86_64-346.46.run
+
+# Just select the defaults for all the questions that pop up.
+
+# Now we can install CUDA
+
+sudo modprobe nvidia
+sudo ./cuda-linux64-rel-7.0.28-19326674.run
+sudo ./cuda-samples-linux-7.0.28-19326674.run
+
+# Follow the suggestion to add the following to your .bashrc
+
+export PATH=$PATH:/usr/local/cuda-7.0/bin
+export LD_LIBRARY_PATH=:/usr/local/cuda-7.0/lib64
