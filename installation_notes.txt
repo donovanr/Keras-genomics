@@ -18,13 +18,13 @@ chmod +x cuda_7.0.28_linux.run
 mkdir nvidia_installers
 ./cuda_7.0.28_linux.run -extract=`pwd`/nvidia_installers
 
-#Then update the linux image to be compatible with NVIDIA's drivers:
+# Then update the linux image to be compatible with NVIDIA's drivers:
 
 sudo apt-get install linux-image-extra-virtual
 
 # While installing the linux-image-extra-virtual, you may be prompted "What would you like to do about menu.lst?". I selected "keep the local version currently installed".
 
-Now we have to disable nouveau since it conflicts with NVIDIA's kernel module. Open
+# Now we have to disable nouveau since it conflicts with NVIDIA's kernel module. Open
 
 sudo vi /etc/modprobe.d/blacklist-nouveau.conf
 
@@ -62,3 +62,13 @@ sudo ./cuda-samples-linux-7.0.28-19326674.run
 
 export PATH=$PATH:/usr/local/cuda-7.0/bin
 export LD_LIBRARY_PATH=:/usr/local/cuda-7.0/lib64
+
+# Now reboot
+
+sudo reboot
+
+# and log back in to check the driver version
+
+nvidia-smi
+
+# should be NVIDIA-SMI 346.46     Driver Version: 346.46
