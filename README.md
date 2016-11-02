@@ -17,6 +17,7 @@ docker run --rm --device /dev/nvidiactl --device /dev/nvidia-uvm --device /dev/n
     -v $(pwd)/example:/modeldir -v $(pwd)/expt1:/datadir haoyangz/keras-genomics \
 	    python main.py -d /datadir -c trial2 -m /modeldir/model.py -s 1001 -y -t -e
 ```
+If everything works fine, you should get a test AUC around 0.86
 
 ## Data preparation
 User needs to prepare [sequence file](https://github.com/gifford-lab/Keras-genomics/blob/master/example/train.fa) in [FASTA](https://en.wikipedia.org/wiki/FASTA_format) format and [target file](https://github.com/gifford-lab/Keras-genomics/blob/master/example/train.target) for training,validation and test set. Refer to the [toy data](https://github.com/gifford-lab/Keras-genomics/blob/master/example/) we provided for more examples.
