@@ -15,7 +15,7 @@ done
 docker pull haoyangz/keras-genomics
 docker run --rm --device /dev/nvidiactl --device /dev/nvidia-uvm --device /dev/nvidia0 \
     -v $(pwd)/example:/modeldir -v $(pwd)/expt1:/datadir haoyangz/keras-genomics \
-	    python main.py -d /datadir -c trial2 -m /modeldir/model.py -s 1001 -y -t -e
+	    python main.py -d /datadir -c trial2 -m /modeldir/model.py -s 101 -y -t -e
 ```
 If everything works fine, you should get a test AUC around 0.86
 
