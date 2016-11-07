@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     if args.retrain:
         ### Resume training
-        model = model_from_json(open(architecture_file).read(),{'MyDense': MyDense})
+        model = model_from_json(open(architecture_file).read())
         model.load_weights(args.rweightfile)
         best_optim,best_lossfunc = cPickle.load(open(optimizer_file,'rb'))
         model.compile(loss=best_lossfunc, optimizer=best_optim,metrics=['accuracy'])
@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     if args.infile != '':
         ## Predict on new data
-        model = model_from_json(open(architecture_file).read(),{'MyDense':MyDense})
+        model = model_from_json(open(architecture_file).read())
         model.load_weights(weight_file)
         best_optim = cPickle.load(open(optimizer_file,'rb'))
         model.compile(loss='binary_crossentropy', optimizer=best_optim,metrics=['accuracy'])
